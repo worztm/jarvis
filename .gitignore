@@ -1,0 +1,21 @@
+# build artifacts
+bin/
+frontend/dist/
+
+# whisper runtime (download separately - see README)
+whisper/bin/*.exe
+whisper/bin/*.dll
+whisper/models/
+
+# node
+node_modules/
+frontend/node_modules/
+
+# go
+*.test
+*.out
+
+# os / editor junk
+Thumbs.db
+.DS_Store
+*.png
