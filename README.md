@@ -1,9 +1,37 @@
 # JARVIS — Windows Native Desktop Edition
 
-Iron-Man-style voice assistant. **Fully local. Zero cloud. Zero subscriptions.**
+> **Iron-Man-style voice assistant. Fully local. Zero cloud. Zero subscriptions.**
+
+Say "open YouTube" out loud → it opens. Ask for the weather → it answers in a real voice. All of it happens **on your machine** — your speech never touches a server.
+
+![stack](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white) ![whisper](https://img.shields.io/badge/whisper.cpp-tiny.en-ff69b4) ![wails](https://img.shields.io/badge/Wails-v2-DF2E64) ![platform](https://img.shields.io/badge/platform-Windows-blue)
 
 ```
 bin\Jarvis.exe    <- double-click it. That's the whole install.
+```
+
+## Why fully local?
+
+Every "voice assistant" you've used ships your audio to someone else's server. JARVIS flips that:
+
+- **Privacy by architecture** — audio is captured in Go, POSTed to a localhost
+  whisper-server on port 8919, and transcribed offline. Speech never leaves the machine.
+- **Zero cost to run** — no API keys, no metered transcription, no subscription.
+- **Zero latency** — recognition round-trip is localhost, not a datacenter.
+
+## How it works
+
+```
+ mic (winmm waveIn 16kHz)
+        │  energy VAD + streaming partials
+        ▼
+ whisper-server.exe (localhost:8919)   ←── whisper.cpp tiny.en, GGML
+        │  transcript + confidence
+        ▼
+ Go brain (fuzzy intent router, filesystem index)
+        │  action + reply
+        ├──▶ Windows SAPI voice  ("mouth")
+        └──▶ React HUD over Wails v2  ("face")
 ```
 
 ## Architecture
@@ -16,9 +44,6 @@ bin\Jarvis.exe    <- double-click it. That's the whole install.
 | Mouth | Windows SAPI synthesis, female voice auto-selected by gender (Zira/Aria/...) |
 | Brain | Pure Go: fuzzy intent router, filesystem index, weather, math, notes, timers |
 | Face | React + Vite, Stark HUD deck |
-
-Speech never leaves the machine: audio is captured in Go, POSTed to a
-localhost whisper-server on port 8919, and transcribed offline.
 
 ## Capabilities
 
@@ -45,6 +70,17 @@ localhost whisper-server on port 8919, and transcribed offline.
 - **/** — focus command line, **ESC** — blur
 - New voice commands interrupt current speech (barge-in)
 
+## Project structure
+
+```
+Jarvis/
+├── main.go / app.go      Wails app binding + command pipeline
+├── brain/                intent router, sites/apps index, tools (pure Go)
+├── sapi/                 Windows SAPI text-to-speech bindings
+├── whisper/              whisper-server spawn + mic capture client
+└── frontend/             React + Vite Stark HUD
+```
+
 ## Development
 
 ```
@@ -63,6 +99,13 @@ Clone-ready except for the whisper runtime — download once:
 
 1. [whisper-bin-x64.zip](https://github.com/ggml-org/whisper.cpp/releases) → extract into `whisper/bin/`
 2. `ggml-tiny.en.bin` (~75 MB) → place in `whisper/models/`
+
+## Roadmap
+
+- [ ] Wake word: "Hey Jarvis" hands-free trigger
+- [ ] LLM fallback brain for freeform questions (local Ollama or cloud)
+- [ ] Face recognition greeting on approach
+- [ ] Neural TTS option (Piper) alongside SAPI
 
 ## Notes
 
