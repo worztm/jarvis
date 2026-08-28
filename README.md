@@ -4,6 +4,12 @@
 
 Say "open YouTube" out loud → it opens. Ask for the weather → it answers in a real voice. All of it happens **on your machine** — your speech never touches a server.
 
+## 🎬 See it in action
+
+<video src="demo/jarvis_intro_720p.mp4" controls muted loop width="720"></video>
+
+*(Player not loading? [Watch the file directly](demo/jarvis_intro_720p.mp4) — it also lives in [`demo/`](demo/).)*
+
 ![stack](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white) ![whisper](https://img.shields.io/badge/whisper.cpp-tiny.en-ff69b4) ![wails](https://img.shields.io/badge/Wails-v2-DF2E64) ![platform](https://img.shields.io/badge/platform-Windows-blue)
 
 ```
